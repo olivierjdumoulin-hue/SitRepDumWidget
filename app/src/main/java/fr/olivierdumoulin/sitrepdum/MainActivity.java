@@ -16,9 +16,13 @@ public class MainActivity extends Activity {
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
+        settings.setAllowFileAccess(true);
+        settings.setAllowContentAccess(true);
+        settings.setAllowFileAccessFromFileURLs(true);
+        settings.setAllowUniversalAccessFromFileURLs(true);
 
         webView.loadUrl(
-            "file:///storage/emulated/0/Obsidian/ObsiDum/_INDEX/SitRepDum/SitRepDum_V6.html"
+            "content://com.lcg.Xplore.FileContent/uid/file%3A%2F%2F%2Fstorage%2Femulated%2F0%2FObsidian%2FObsiDum%2F_INDEX%2FSitRepDum%2FSitRepDum_V6.html"
         );
 
         setContentView(webView);
