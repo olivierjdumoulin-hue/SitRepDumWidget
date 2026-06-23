@@ -3,19 +3,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-<receiver
-    android:name=".SitRepWidgetProvider"
-    android:exported="false">
 
-    <intent-filter>
-        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-    </intent-filter>
-
-    <meta-data
-        android:name="android.appwidget.provider"
-        android:resource="@xml/sitrep_widget_info" />
-
-</receiver>
     <application
         android:theme="@style/AppTheme"
         android:label="SitRepDum"
@@ -32,6 +20,20 @@
             </intent-filter>
 
         </activity>
+
+        <receiver
+            android:name=".SitRepWidgetProvider"
+            android:exported="false">
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/sitrep_widget_info" />
+
+        </receiver>
 
     </application>
 
