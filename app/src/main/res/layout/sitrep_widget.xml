@@ -1,26 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#111111"
-    android:padding="12dp">
+    android:background="#050505"
+    android:padding="14dp">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="SitRepDum"
         android:textColor="#FFD400"
-        android:textSize="22sp"
-        android:textStyle="bold"/>
+        android:textSize="26sp"
+        android:textStyle="bold" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Touchez pour ouvrir SitRepDum"
+        android:text="orage · 19°/37° · pluie 20%"
+        android:textColor="#9CFF8A"
+        android:textSize="13sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="1. TODAY     2. J+1"
         android:textColor="#FFFFFF"
-        android:textSize="14sp"/>
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingTop="24dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="AUJOURD’HUI · 06H00 → 20H00"
+        android:textColor="#FFD400"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingTop="24dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="08:45  Cérémonie&#10;10:00  Invitation&#10;11:30  Pot de départ&#10;14:00  Réponse CT"
+        android:textColor="#DDDDDD"
+        android:textSize="14sp"
+        android:paddingTop="14dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="OCCUPATION 29%     LIBRE 10H00"
+        android:textColor="#66FF44"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:paddingTop="24dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Touchez pour ouvrir la page complète"
+        android:textColor="#AAAAAA"
+        android:textSize="12sp"
+        android:paddingTop="28dp" />
 
 </LinearLayout>
