@@ -12,24 +12,24 @@
         android:layout_height="wrap_content"
         android:text="SitRepDum"
         android:textColor="#FFD400"
-        android:textSize="26sp"
+        android:textSize="28sp"
         android:textStyle="bold" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="orage · 19°/37° · pluie 20%"
+        android:text="orage · 19°/37° · pluie 20%     MAJ 06:13"
         android:textColor="#9CFF8A"
         android:textSize="13sp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="1. TODAY     2. J+1"
+        android:text="1. TODAY      2. J+1"
         android:textColor="#FFFFFF"
-        android:textSize="20sp"
+        android:textSize="22sp"
         android:textStyle="bold"
-        android:paddingTop="24dp" />
+        android:paddingTop="18dp" />
 
     <TextView
         android:layout_width="match_parent"
@@ -38,31 +38,99 @@
         android:textColor="#FFD400"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:paddingTop="24dp" />
+        android:paddingTop="18dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="08:45  Cérémonie&#10;10:00  Invitation&#10;11:30  Pot de départ&#10;14:00  Réponse CT"
+        android:text="06 07 08 09 10 11 12 13 14 15 16 17 18 19 20"
+        android:textColor="#BBBBBB"
+        android:textSize="11sp"
+        android:paddingTop="8dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="▏▏▏▏▏▏▏▏ 🟩🟩🟩 ▏▏ 🟩🟩🟩 ▏▏▏ 🟩🟩🟩 ▏▏▏▏"
+        android:textColor="#55FF44"
+        android:textSize="16sp"
+        android:paddingTop="4dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="MATIN"
+        android:textColor="#FFD400"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:paddingTop="18dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="08:45  Cérémonie&#10;10:00  Invitation / rendez-vous&#10;10:00  Point Tekkit&#10;11:30  Pot de départ"
         android:textColor="#DDDDDD"
         android:textSize="14sp"
+        android:paddingTop="6dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="APRÈS-MIDI"
+        android:textColor="#FFD400"
+        android:textSize="15sp"
+        android:textStyle="bold"
         android:paddingTop="14dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="OCCUPATION 29%     LIBRE 10H00"
-        android:textColor="#66FF44"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        android:paddingTop="24dp" />
+        android:text="14:00  Process de réponse aux candidats&#10;14:00  Refonte de la CT du B@RN"
+        android:textColor="#DDDDDD"
+        android:textSize="14sp"
+        android:paddingTop="6dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Touchez pour ouvrir la page complète"
+        android:text="OCCUPATION 29%     DISPONIBILITÉ 71%"
+        android:textColor="#66FF44"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:paddingTop="18dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="OCCUPÉ 4H00          LIBRE 10H00"
+        android:textColor="#FF9900"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:paddingTop="4dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TÂCHES"
+        android:textColor="#FFD400"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingTop="20dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🔴 En retard : finaliser dossier&#10;🟠 Aujourd’hui : traiter candidatures&#10;🟢 À venir : préparer point recrutement&#10;⚪ Sans date : ranger notes Obsidian"
+        android:textColor="#EEEEEE"
+        android:textSize="13sp"
+        android:paddingTop="6dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Touchez pour ouvrir SitRepDum complet"
         android:textColor="#AAAAAA"
         android:textSize="12sp"
-        android:paddingTop="28dp" />
+        android:paddingTop="18dp" />
 
 </LinearLayout>
