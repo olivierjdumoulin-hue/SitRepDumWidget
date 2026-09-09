@@ -266,6 +266,7 @@ jobs:
           import android.text.SpannableString;
           import android.text.Spanned;
           import android.text.style.StyleSpan;
+          import android.text.style.ForegroundColorSpan;
           import android.widget.RemoteViews;
           import android.widget.RemoteViewsService;
           import android.appwidget.AppWidgetManager;
@@ -291,6 +292,9 @@ jobs:
                   private static final int LIGHT_GREEN = Color.rgb(144,238,144); // #90EE90
                   private static final int WHITE = Color.rgb(245,245,245);
                   private static final int GREY = Color.rgb(150,150,150);
+                  private static final int YELLOW_FLUO = Color.rgb(255,255,0);      // #FFFF00
+                  private static final int LIGHT_YELLOW = Color.rgb(255,255,153);  // #FFFF99
+                  private static final Pattern RDV_LINE = Pattern.compile("^\\d{1,2}:\\d{2}\\s+.+$");
                   private static final Pattern DATE_LINE = Pattern.compile(
                           "(?i)^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\\s+\\d{1,2}\\s+.+\\s+\\d{4}$"
                   );
@@ -339,6 +343,20 @@ jobs:
                       return sp;
                   }
 
+                  private CharSequence styledRdv(String s) {
+                      SpannableString sp = new SpannableString(s);
+                      int cut = s.indexOf(' ');
+                      if (cut < 0) cut = s.length();
+                      // Heure : jaune fluo + gras.
+                      sp.setSpan(new ForegroundColorSpan(YELLOW_FLUO), 0, cut, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                      sp.setSpan(new StyleSpan(Typeface.BOLD), 0, cut, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                      // Intitulé du rendez-vous : jaune clair.
+                      if (cut < s.length()) {
+                          sp.setSpan(new ForegroundColorSpan(LIGHT_YELLOW), cut, s.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                      }
+                      return sp;
+                  }
+
                   @Override
                   public RemoteViews getViewAt(int position) {
                       if (position < 0 || position >= lines.size()) return null;
@@ -358,6 +376,13 @@ jobs:
                           v.setTextColor(R.id.row_text, LIGHT_GREEN);
                           v.setTextViewTextSize(R.id.row_text, android.util.TypedValue.COMPLEX_UNIT_SP, 16f);
                           v.setViewPadding(R.id.row_text, 0, 3, 0, 0);
+                      }
+                      // Rendez-vous : heure jaune fluo, intitulé jaune clair.
+                      else if (RDV_LINE.matcher(text.trim()).matches()) {
+                          v.setTextViewText(R.id.row_text, styledRdv(text));
+                          v.setTextColor(R.id.row_text, WHITE);
+                          v.setTextViewTextSize(R.id.row_text, android.util.TypedValue.COMPLEX_UNIT_SP, 15f);
+                          v.setViewPadding(R.id.row_text, 0, 0, 0, 0);
                       }
                       // Séparateurs : gris et très compacts.
                       else if (isSeparator(text)) {
