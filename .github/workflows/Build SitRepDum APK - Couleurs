@@ -293,10 +293,7 @@ jobs:
                   private static final int WHITE = Color.rgb(245,245,245);
                   private static final int GREY = Color.rgb(150,150,150);
                   private static final int YELLOW_FLUO = Color.rgb(255,255,0);      // #FFFF00
-                  private static final int LIGHT_YELLOW = Color.rgb(255,255,153);
-                   private static final int ACTION_RED = Color.rgb(255,120,120);
-                   private static final int INDIVIDUEL_BLUE = Color.rgb(135,206,250);
-                   private static final int TRAVAIL_GREEN = Color.rgb(144,238,144);  // #FFFF99
+                  private static final int LIGHT_YELLOW = Color.rgb(255,255,153);  // #FFFF99
                   private static final Pattern RDV_LINE = Pattern.compile("^\\d{1,2}:\\d{2}\\s+.+$");
                   private static final Pattern DATE_LINE = Pattern.compile(
                           "(?i)^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\\s+\\d{1,2}\\s+.+\\s+\\d{4}$"
@@ -360,24 +357,6 @@ jobs:
                       return sp;
                   }
 
-
-                  private boolean hasTaskTag(String s) {
-                      return s.startsWith("[ACTION] ")
-                          || s.startsWith("[INDIVIDUEL] ")
-                          || s.startsWith("[TRAVAIL] ");
-                  }
-
-                  private String stripTaskTag(String s) {
-                      return s.replaceFirst("^\\[(ACTION|INDIVIDUEL|TRAVAIL)\\]\\s*", "");
-                  }
-
-                  private int taskTagColor(String s) {
-                      if (s.startsWith("[ACTION] ")) return ACTION_RED;
-                      if (s.startsWith("[INDIVIDUEL] ")) return INDIVIDUEL_BLUE;
-                      if (s.startsWith("[TRAVAIL] ")) return TRAVAIL_GREEN;
-                      return WHITE;
-                  }
-
                   @Override
                   public RemoteViews getViewAt(int position) {
                       if (position < 0 || position >= lines.size()) return null;
@@ -397,14 +376,6 @@ jobs:
                           v.setTextColor(R.id.row_text, LIGHT_GREEN);
                           v.setTextViewTextSize(R.id.row_text, android.util.TypedValue.COMPLEX_UNIT_SP, 16f);
                           v.setViewPadding(R.id.row_text, 0, 3, 0, 0);
-                      }
-                      // Tâches : couleur selon tag.
-                      else if (hasTaskTag(text)) {
-                          String shown = stripTaskTag(text);
-                          v.setTextViewText(R.id.row_text, shown);
-                          v.setTextColor(R.id.row_text, taskTagColor(text));
-                          v.setTextViewTextSize(R.id.row_text, android.util.TypedValue.COMPLEX_UNIT_SP, 15f);
-                          v.setViewPadding(R.id.row_text, 0, 0, 0, 0);
                       }
                       // Rendez-vous : heure jaune fluo, intitulé jaune clair.
                       else if (RDV_LINE.matcher(text.trim()).matches()) {
@@ -449,3 +420,4 @@ jobs:
         with:
           name: SitRepDum-couleurs-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+
