@@ -17,19 +17,6 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-            - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Create Android project
-        run: |
-        
-
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
@@ -215,6 +202,7 @@ jobs:
           import android.widget.Toast;
 
           public class MainActivity extends Activity {
+
               static final String HTML_PATH =
                   "file:///storage/emulated/0/Obsidian/ObsiDum/_INDEX/SitRepDum/SitRepDum_V6.html";
 
@@ -224,6 +212,7 @@ jobs:
 
                   if (Build.VERSION.SDK_INT >= 30 &&
                       !Environment.isExternalStorageManager()) {
+
                       Toast.makeText(
                           this,
                           "Autorise l'accès à tous les fichiers pour SitRepDum.",
@@ -233,11 +222,19 @@ jobs:
                       try {
                           Intent i =
                               new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                          i.setData(Uri.parse("package:" + getPackageName()));
+
+                          i.setData(
+                              Uri.parse("package:" + getPackageName())
+                          );
+
                           startActivity(i);
+
                       } catch (Exception e) {
+
                           startActivity(
-                              new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+                              new Intent(
+                                  Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
+                              )
                           );
                       }
                   }
@@ -246,6 +243,7 @@ jobs:
                   setContentView(web);
 
                   WebSettings s = web.getSettings();
+
                   s.setJavaScriptEnabled(true);
                   s.setDomStorageEnabled(true);
                   s.setAllowFileAccess(true);
@@ -295,18 +293,23 @@ jobs:
                           "Impossible de lire widget.txt",
                           Toast.LENGTH_LONG
                       ).show();
+
                       finish();
                       return;
                   }
 
-                  Locale fr = Locale.FRANCE;
-                  String date = new SimpleDateFormat(
-                      "EEEE d MMMM yyyy", fr
-                  ).format(new Date());
+                  String date =
+                      new SimpleDateFormat(
+                          "EEEE d MMMM yyyy",
+                          Locale.FRANCE
+                      ).format(new Date());
 
-                  String sujet = "SitRepDum — " + date;
+                  String sujet =
+                      "SitRepDum — " + date;
 
-                  Intent mail = new Intent(Intent.ACTION_SEND);
+                  Intent mail =
+                      new Intent(Intent.ACTION_SEND);
+
                   mail.setType("text/plain");
 
                   mail.putExtra(
@@ -325,10 +328,16 @@ jobs:
                   );
 
                   try {
+
                       startActivity(
-                          Intent.createChooser(mail, "Envoyer SitRepDum")
+                          Intent.createChooser(
+                              mail,
+                              "Envoyer SitRepDum"
+                          )
                       );
+
                   } catch (Exception e) {
+
                       Toast.makeText(
                           this,
                           "Aucune application de messagerie disponible.",
@@ -340,32 +349,41 @@ jobs:
               }
 
               private String lireSitRep() {
+
                   File f = new File(FILE);
 
-                  if (!f.exists()) return null;
+                  if (!f.exists()) {
+                      return null;
+                  }
 
-                  StringBuilder sb = new StringBuilder();
+                  StringBuilder sb =
+                      new StringBuilder();
 
-                  try (BufferedReader br =
-                           new BufferedReader(new FileReader(f))) {
+                  try (
+                      BufferedReader br =
+                          new BufferedReader(
+                              new FileReader(f)
+                          )
+                  ) {
 
                       String ligne;
 
                       while ((ligne = br.readLine()) != null) {
 
-                          // Retire uniquement les balises techniques
-                          // utilisées pour les couleurs du widget.
-                          ligne = ligne.replaceFirst(
-                              "^\\s*\\[(ACTION|INDIVIDUEL|TRAVAIL)\\]\\s*",
-                              ""
-                          );
+                          ligne =
+                              ligne.replaceFirst(
+                                  "^\\s*\\[(ACTION|INDIVIDUEL|TRAVAIL)\\]\\s*",
+                                  ""
+                              );
 
-                          sb.append(ligne).append("\n");
+                          sb.append(ligne)
+                            .append("\n");
                       }
 
                       return sb.toString().trim();
 
                   } catch (Exception e) {
+
                       return null;
                   }
               }
@@ -390,6 +408,7 @@ jobs:
                   AppWidgetManager manager,
                   int[] ids
               ) {
+
                   for (int id : ids) {
 
                       RemoteViews views =
@@ -411,7 +430,9 @@ jobs:
 
                       svc.setData(
                           android.net.Uri.parse(
-                              svc.toUri(Intent.URI_INTENT_SCHEME)
+                              svc.toUri(
+                                  Intent.URI_INTENT_SCHEME
+                              )
                           )
                       );
 
@@ -420,10 +441,11 @@ jobs:
                           svc
                       );
 
-                      // Clic sur le contenu du SitRep :
-                      // ouvre l'application.
                       Intent open =
-                          new Intent(context, MainActivity.class);
+                          new Intent(
+                              context,
+                              MainActivity.class
+                          );
 
                       PendingIntent openPi =
                           PendingIntent.getActivity(
@@ -439,9 +461,11 @@ jobs:
                           openPi
                       );
 
-                      // Bouton MAIL.
                       Intent mail =
-                          new Intent(context, MailActivity.class);
+                          new Intent(
+                              context,
+                              MailActivity.class
+                          );
 
                       PendingIntent mailPi =
                           PendingIntent.getActivity(
@@ -457,7 +481,10 @@ jobs:
                           mailPi
                       );
 
-                      manager.updateAppWidget(id, views);
+                      manager.updateAppWidget(
+                          id,
+                          views
+                      );
 
                       manager.notifyAppWidgetViewDataChanged(
                           id,
@@ -493,13 +520,18 @@ jobs:
 
               @Override
               public RemoteViewsFactory onGetViewFactory(Intent intent) {
-                  return new Factory(getApplicationContext());
+                  return new Factory(
+                      getApplicationContext()
+                  );
               }
 
-              static class Factory implements RemoteViewsFactory {
+              static class Factory
+                  implements RemoteViewsFactory {
 
                   private final Context context;
-                  private final List<String> lines = new ArrayList<>();
+
+                  private final List<String> lines =
+                      new ArrayList<>();
 
                   private static final String FILE =
                       "/storage/emulated/0/Obsidian/ObsiDum/_INDEX/SitRepDum/widget.txt";
@@ -546,13 +578,20 @@ jobs:
                   }
 
                   private void load() {
+
                       lines.clear();
 
-                      File f = new File(FILE);
+                      File f =
+                          new File(FILE);
 
                       if (!f.exists()) {
-                          lines.add("widget.txt introuvable");
+
+                          lines.add(
+                              "widget.txt introuvable"
+                          );
+
                           lines.add(FILE);
+
                           return;
                       }
 
@@ -562,18 +601,22 @@ jobs:
                                   new FileReader(f)
                               )
                       ) {
+
                           String s;
 
                           while ((s = br.readLine()) != null) {
+
                               if (!s.trim().isEmpty()) {
                                   lines.add(s);
                               }
                           }
 
                       } catch (Exception e) {
+
                           lines.add(
                               "Erreur lecture widget.txt"
                           );
+
                           lines.add(
                               e.getClass().getSimpleName()
                           );
@@ -601,23 +644,28 @@ jobs:
                   }
 
                   private boolean isSeparator(String s) {
+
                       return s.matches(
                           "^[─━_\\-]{8,}$"
                       );
                   }
 
                   private boolean isDate(String s) {
+
                       return DATE_LINE
                           .matcher(s.trim())
                           .matches();
                   }
 
                   private CharSequence bold(String s) {
+
                       SpannableString sp =
                           new SpannableString(s);
 
                       sp.setSpan(
-                          new StyleSpan(Typeface.BOLD),
+                          new StyleSpan(
+                              Typeface.BOLD
+                          ),
                           0,
                           sp.length(),
                           Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -631,10 +679,12 @@ jobs:
                       SpannableString sp =
                           new SpannableString(s);
 
-                      int cut = s.indexOf(' ');
+                      int cut =
+                          s.indexOf(' ');
 
-                      if (cut < 0)
+                      if (cut < 0) {
                           cut = s.length();
+                      }
 
                       sp.setSpan(
                           new ForegroundColorSpan(
@@ -646,7 +696,9 @@ jobs:
                       );
 
                       sp.setSpan(
-                          new StyleSpan(Typeface.BOLD),
+                          new StyleSpan(
+                              Typeface.BOLD
+                          ),
                           0,
                           cut,
                           Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -670,7 +722,9 @@ jobs:
                   private boolean hasTaskTag(String s) {
 
                       String t =
-                          s == null ? "" : s.trim();
+                          s == null
+                              ? ""
+                              : s.trim();
 
                       return
                           t.startsWith("[ACTION]") ||
@@ -689,16 +743,21 @@ jobs:
                   private int taskTagColor(String s) {
 
                       String t =
-                          s == null ? "" : s.trim();
+                          s == null
+                              ? ""
+                              : s.trim();
 
-                      if (t.startsWith("[ACTION]"))
+                      if (t.startsWith("[ACTION]")) {
                           return ACTION_RED;
+                      }
 
-                      if (t.startsWith("[INDIVIDUEL]"))
+                      if (t.startsWith("[INDIVIDUEL]")) {
                           return INDIVIDUEL_BLUE;
+                      }
 
-                      if (t.startsWith("[TRAVAIL]"))
+                      if (t.startsWith("[TRAVAIL]")) {
                           return TRAVAIL_GREEN;
+                      }
 
                       return WHITE;
                   }
@@ -711,8 +770,9 @@ jobs:
                       if (
                           position < 0 ||
                           position >= lines.size()
-                      )
+                      ) {
                           return null;
+                      }
 
                       String text =
                           lines.get(position);
@@ -771,12 +831,9 @@ jobs:
 
                       } else if (hasTaskTag(text)) {
 
-                          String shown =
-                              stripTaskTag(text);
-
                           v.setTextViewText(
                               R.id.row_text,
-                              shown
+                              stripTaskTag(text)
                           );
 
                           v.setTextColor(
@@ -893,9 +950,7 @@ jobs:
                   }
 
                   @Override
-                  public long getItemId(
-                      int position
-                  ) {
+                  public long getItemId(int position) {
                       return position;
                   }
 
