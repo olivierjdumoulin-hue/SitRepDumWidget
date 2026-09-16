@@ -1,457 +1,910 @@
-    name: Build SitRepDum APK - Couleurs
+name: Build SitRepDum APK - V9 MAIL
 
-    on:
-      workflow_dispatch:
+on:
+  workflow_dispatch:
 
-    jobs:
-      build:
-        runs-on: ubuntu-latest
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-        steps:
-          - name: Checkout
-            uses: actions/checkout@v4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-          - name: Setup Java
-            uses: actions/setup-java@v4
-            with:
-              distribution: temurin
-              java-version: '17'
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
-          - name: Setup Android SDK
-            uses: android-actions/setup-android@v3
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
-          - name: Setup Gradle
-            uses: gradle/actions/setup-gradle@v4
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-          - name: Create Android project
-            run: |
-              mkdir -p app/src/main/java/fr/olivierdumoulin/sitrepdum
-              mkdir -p app/src/main/res/layout
-              mkdir -p app/src/main/res/xml
-              mkdir -p app/src/main/res/values
+      - name: Create Android project
+        run: |
+          mkdir -p app/src/main/java/fr/olivierdumoulin/sitrepdum
+          mkdir -p app/src/main/res/layout
+          mkdir -p app/src/main/res/xml
+          mkdir -p app/src/main/res/values
 
-              cat > settings.gradle <<'EOF'
-              pluginManagement {
-                  repositories {
-                      google()
-                      mavenCentral()
-                      gradlePluginPortal()
-                  }
+          cat > settings.gradle <<'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
               }
-              dependencyResolutionManagement {
-                  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-                  repositories {
-                      google()
-                      mavenCentral()
-                  }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
               }
-              rootProject.name = "SitRepDumWidget"
-              include ":app"
-              EOF
+          }
+          rootProject.name = "SitRepDumWidget"
+          include ":app"
+          EOF
 
-              cat > build.gradle <<'EOF'
-              plugins {
-                  id 'com.android.application' version '8.7.3' apply false
+          cat > build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application' version '8.7.3' apply false
+          }
+          EOF
+
+          cat > app/build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application'
+          }
+
+          android {
+              namespace 'fr.olivierdumoulin.sitrepdum'
+              compileSdk 35
+
+              defaultConfig {
+                  applicationId 'fr.olivierdumoulin.sitrepdum'
+                  minSdk 26
+                  targetSdk 35
+                  versionCode 9
+                  versionName '9.0-mail'
               }
-              EOF
+          }
+          EOF
 
-              cat > app/build.gradle <<'EOF'
-              plugins {
-                  id 'com.android.application'
-              }
+          cat > app/src/main/AndroidManifest.xml <<'EOF'
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+              <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
 
-              android {
-                  namespace 'fr.olivierdumoulin.sitrepdum'
-                  compileSdk 35
+              <application
+                  android:theme="@style/AppTheme"
+                  android:label="SitRepDum V9"
+                  android:allowBackup="false"
+                  android:usesCleartextTraffic="true"
+                  android:resizeableActivity="true">
 
-                  defaultConfig {
-                      applicationId 'fr.olivierdumoulin.sitrepdum'
-                      minSdk 26
-                      targetSdk 35
-                      versionCode 8
-                      versionName '8.0-tags'
-                  }
-              }
-              EOF
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN"/>
+                          <category android:name="android.intent.category.LAUNCHER"/>
+                      </intent-filter>
+                  </activity>
 
-              cat > app/src/main/AndroidManifest.xml <<'EOF'
-              <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-                  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-                  <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+                  <activity
+                      android:name=".MailActivity"
+                      android:exported="false"/>
 
-                  <application
-                      android:theme="@style/AppTheme"
-                      android:label="SitRepDum V8"
-                      android:allowBackup="false"
-                      android:usesCleartextTraffic="true"
-                      android:resizeableActivity="true">
+                  <receiver
+                      android:name=".SitRepWidgetProvider"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                      </intent-filter>
+                      <meta-data
+                          android:name="android.appwidget.provider"
+                          android:resource="@xml/sitrep_widget_info"/>
+                  </receiver>
 
-                      <activity
-                          android:name=".MainActivity"
-                          android:exported="true">
-                          <intent-filter>
-                              <action android:name="android.intent.action.MAIN"/>
-                              <category android:name="android.intent.category.LAUNCHER"/>
-                          </intent-filter>
-                      </activity>
+                  <service
+                      android:name=".SitRepWidgetService"
+                      android:permission="android.permission.BIND_REMOTEVIEWS"
+                      android:exported="false"/>
+              </application>
+          </manifest>
+          EOF
 
-                      <receiver
-                          android:name=".SitRepWidgetProvider"
-                          android:exported="true">
-                          <intent-filter>
-                              <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-                          </intent-filter>
-                          <meta-data
-                              android:name="android.appwidget.provider"
-                              android:resource="@xml/sitrep_widget_info"/>
-                      </receiver>
+          cat > app/src/main/res/values/styles.xml <<'EOF'
+          <resources>
+              <style name="AppTheme" parent="android:style/Theme.Material.NoActionBar">
+                  <item name="android:windowLightStatusBar">false</item>
+                  <item name="android:windowBackground">#000000</item>
+                  <item name="android:colorAccent">#39FF14</item>
+              </style>
+          </resources>
+          EOF
 
-                      <service
-                          android:name=".SitRepWidgetService"
-                          android:permission="android.permission.BIND_REMOTEVIEWS"
-                          android:exported="false"/>
-                  </application>
-              </manifest>
-              EOF
+          cat > app/src/main/res/xml/sitrep_widget_info.xml <<'EOF'
+          <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+              android:minWidth="250dp"
+              android:minHeight="400dp"
+              android:targetCellWidth="4"
+              android:targetCellHeight="6"
+              android:updatePeriodMillis="1800000"
+              android:initialLayout="@layout/widget_layout"
+              android:resizeMode="horizontal|vertical"
+              android:widgetCategory="home_screen"/>
+          EOF
 
-              cat > app/src/main/res/values/styles.xml <<'EOF'
-              <resources>
-                  <style name="AppTheme" parent="android:style/Theme.Material.NoActionBar">
-                      <item name="android:windowLightStatusBar">false</item>
-                      <item name="android:windowBackground">#000000</item>
-                      <item name="android:colorAccent">#39FF14</item>
-                  </style>
-              </resources>
-              EOF
+          cat > app/src/main/res/layout/widget_layout.xml <<'EOF'
+          <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/widget_root"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:paddingLeft="10dp"
+              android:paddingRight="10dp"
+              android:paddingTop="8dp"
+              android:paddingBottom="6dp"
+              android:background="#050505">
 
-              cat > app/src/main/res/xml/sitrep_widget_info.xml <<'EOF'
-              <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:minWidth="250dp"
-                  android:minHeight="400dp"
-                  android:targetCellWidth="4"
-                  android:targetCellHeight="6"
-                  android:updatePeriodMillis="1800000"
-                  android:initialLayout="@layout/widget_layout"
-                  android:resizeMode="horizontal|vertical"
-                  android:widgetCategory="home_screen"/>
-              EOF
-
-              cat > app/src/main/res/layout/widget_layout.xml <<'EOF'
-              <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:id="@+id/widget_root"
+              <ListView
+                  android:id="@+id/widget_list"
                   android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:orientation="vertical"
-                  android:paddingLeft="10dp"
-                  android:paddingRight="10dp"
-                  android:paddingTop="8dp"
-                  android:paddingBottom="8dp"
-                  android:background="#050505">
+                  android:layout_height="0dp"
+                  android:layout_weight="1"
+                  android:divider="@android:color/transparent"
+                  android:dividerHeight="0dp"
+                  android:cacheColorHint="#050505"
+                  android:scrollbarStyle="insideOverlay"/>
 
-                  <ListView
-                      android:id="@+id/widget_list"
-                      android:layout_width="match_parent"
-                      android:layout_height="match_parent"
-                      android:divider="@android:color/transparent"
-                      android:dividerHeight="0dp"
-                      android:cacheColorHint="#050505"
-                      android:scrollbarStyle="insideOverlay"/>
-              </LinearLayout>
-              EOF
-
-              cat > app/src/main/res/layout/widget_row.xml <<'EOF'
-              <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:id="@+id/row_text"
+              <TextView
+                  android:id="@+id/mail_button"
                   android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:includeFontPadding="false"
-                  android:paddingTop="0dp"
-                  android:paddingBottom="0dp"
-                  android:textColor="#F5F5F5"
-                  android:textSize="15sp"
-                  android:lineSpacingExtra="0dp"
-                  android:maxLines="3"
-                  android:ellipsize="end"/>
-              EOF
+                  android:layout_height="36dp"
+                  android:gravity="center"
+                  android:text="✉  MAIL"
+                  android:textStyle="bold"
+                  android:textSize="14sp"
+                  android:textColor="#39FF14"
+                  android:background="#151515"/>
+          </LinearLayout>
+          EOF
 
-              cat > app/src/main/java/fr/olivierdumoulin/sitrepdum/MainActivity.java <<'EOF'
-              package fr.olivierdumoulin.sitrepdum;
+          cat > app/src/main/res/layout/widget_row.xml <<'EOF'
+          <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/row_text"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:includeFontPadding="false"
+              android:paddingTop="0dp"
+              android:paddingBottom="0dp"
+              android:textColor="#F5F5F5"
+              android:textSize="15sp"
+              android:lineSpacingExtra="0dp"
+              android:maxLines="3"
+              android:ellipsize="end"/>
+          EOF
 
-              import android.app.Activity;
-              import android.content.Intent;
-              import android.net.Uri;
-              import android.os.Bundle;
-              import android.os.Build;
-              import android.os.Environment;
-              import android.provider.Settings;
-              import android.webkit.WebSettings;
-              import android.webkit.WebView;
-              import android.widget.Toast;
+          cat > app/src/main/java/fr/olivierdumoulin/sitrepdum/MainActivity.java <<'EOF'
+          package fr.olivierdumoulin.sitrepdum;
 
-              public class MainActivity extends Activity {
-                  static final String HTML_PATH = "file:///storage/emulated/0/Obsidian/ObsiDum/_INDEX/SitRepDum/SitRepDum_V6.html";
+          import android.app.Activity;
+          import android.content.Intent;
+          import android.net.Uri;
+          import android.os.Bundle;
+          import android.os.Build;
+          import android.os.Environment;
+          import android.provider.Settings;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.widget.Toast;
 
-                  @Override
-                  protected void onCreate(Bundle b) {
-                      super.onCreate(b);
-                      Toast.makeText(this, "SitRepDum V8 TAGS", Toast.LENGTH_LONG).show();
+          public class MainActivity extends Activity {
+              static final String HTML_PATH =
+                  "file:///storage/emulated/0/Obsidian/ObsiDum/_INDEX/SitRepDum/SitRepDum_V6.html";
 
-                      if (Build.VERSION.SDK_INT >= 30 && !Environment.isExternalStorageManager()) {
-                          Toast.makeText(this, "Autorise l'accès à tous les fichiers pour SitRepDum.", Toast.LENGTH_LONG).show();
-                          try {
-                              Intent i = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                              i.setData(Uri.parse("package:" + getPackageName()));
-                              startActivity(i);
-                          } catch (Exception e) {
-                              startActivity(new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
-                          }
-                      }
+              @Override
+              protected void onCreate(Bundle b) {
+                  super.onCreate(b);
 
-                      WebView web = new WebView(this);
-                      setContentView(web);
-                      WebSettings s = web.getSettings();
-                      s.setJavaScriptEnabled(true);
-                      s.setDomStorageEnabled(true);
-                      s.setAllowFileAccess(true);
-                      s.setAllowContentAccess(true);
-                      s.setBuiltInZoomControls(true);
-                      s.setDisplayZoomControls(false);
-                      web.loadUrl(HTML_PATH);
-                  }
-              }
-              EOF
+                  if (Build.VERSION.SDK_INT >= 30 &&
+                      !Environment.isExternalStorageManager()) {
+                      Toast.makeText(
+                          this,
+                          "Autorise l'accès à tous les fichiers pour SitRepDum.",
+                          Toast.LENGTH_LONG
+                      ).show();
 
-              cat > app/src/main/java/fr/olivierdumoulin/sitrepdum/SitRepWidgetProvider.java <<'EOF'
-              package fr.olivierdumoulin.sitrepdum;
-
-              import android.app.PendingIntent;
-              import android.appwidget.AppWidgetManager;
-              import android.appwidget.AppWidgetProvider;
-              import android.content.Context;
-              import android.content.Intent;
-              import android.widget.RemoteViews;
-
-              public class SitRepWidgetProvider extends AppWidgetProvider {
-                  @Override
-                  public void onUpdate(Context context, AppWidgetManager manager, int[] ids) {
-                      for (int id : ids) {
-                          RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-
-                          Intent svc = new Intent(context, SitRepWidgetService.class);
-                          svc.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
-                          svc.setData(android.net.Uri.parse(svc.toUri(Intent.URI_INTENT_SCHEME)));
-                          views.setRemoteAdapter(R.id.widget_list, svc);
-
-                          Intent open = new Intent(context, MainActivity.class);
-                          PendingIntent pi = PendingIntent.getActivity(
-                                  context, 0, open,
-                                  PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                      try {
+                          Intent i =
+                              new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                          i.setData(Uri.parse("package:" + getPackageName()));
+                          startActivity(i);
+                      } catch (Exception e) {
+                          startActivity(
+                              new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
                           );
-                          views.setOnClickPendingIntent(R.id.widget_root, pi);
-                          views.setPendingIntentTemplate(R.id.widget_list, pi);
-
-                          manager.updateAppWidget(id, views);
-                          manager.notifyAppWidgetViewDataChanged(id, R.id.widget_list);
                       }
                   }
+
+                  WebView web = new WebView(this);
+                  setContentView(web);
+
+                  WebSettings s = web.getSettings();
+                  s.setJavaScriptEnabled(true);
+                  s.setDomStorageEnabled(true);
+                  s.setAllowFileAccess(true);
+                  s.setAllowContentAccess(true);
+                  s.setBuiltInZoomControls(true);
+                  s.setDisplayZoomControls(false);
+
+                  web.loadUrl(HTML_PATH);
               }
-              EOF
+          }
+          EOF
 
-              cat > app/src/main/java/fr/olivierdumoulin/sitrepdum/SitRepWidgetService.java <<'EOF'
-              package fr.olivierdumoulin.sitrepdum;
+          cat > app/src/main/java/fr/olivierdumoulin/sitrepdum/MailActivity.java <<'EOF'
+          package fr.olivierdumoulin.sitrepdum;
 
-              import android.content.Context;
-              import android.content.Intent;
-              import android.graphics.Color;
-              import android.graphics.Typeface;
-              import android.text.SpannableString;
-              import android.text.Spanned;
-              import android.text.style.StyleSpan;
-              import android.text.style.ForegroundColorSpan;
-              import android.widget.RemoteViews;
-              import android.widget.RemoteViewsService;
-              import android.appwidget.AppWidgetManager;
-              import java.io.BufferedReader;
-              import java.io.File;
-              import java.io.FileReader;
-              import java.util.ArrayList;
-              import java.util.List;
-              import java.util.Locale;
-              import java.util.regex.Pattern;
+          import android.app.Activity;
+          import android.content.Intent;
+          import android.os.Bundle;
+          import android.widget.Toast;
 
-              public class SitRepWidgetService extends RemoteViewsService {
-                  @Override
-                  public RemoteViewsFactory onGetViewFactory(Intent intent) {
-                      return new Factory(getApplicationContext());
+          import java.io.BufferedReader;
+          import java.io.File;
+          import java.io.FileReader;
+          import java.text.SimpleDateFormat;
+          import java.util.Date;
+          import java.util.Locale;
+
+          public class MailActivity extends Activity {
+
+              private static final String FILE =
+                  "/storage/emulated/0/Obsidian/ObsiDum/_INDEX/SitRepDum/widget.txt";
+
+              private static final String[] DESTINATAIRES = {
+                  "olivier.j.dumoulin@gmail.com",
+                  "olivier.dumoulin@intradef.gouv.fr"
+              };
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+
+                  String texte = lireSitRep();
+
+                  if (texte == null) {
+                      Toast.makeText(
+                          this,
+                          "Impossible de lire widget.txt",
+                          Toast.LENGTH_LONG
+                      ).show();
+                      finish();
+                      return;
                   }
 
-                  static class Factory implements RemoteViewsFactory {
-                      private final Context context;
-                      private final List<String> lines = new ArrayList<>();
-                      private static final String FILE = "/storage/emulated/0/Obsidian/ObsiDum/_INDEX/SitRepDum/widget.txt";
-                      private static final int FLUO = Color.rgb(57,255,20);       // #39FF14
-                      private static final int LIGHT_GREEN = Color.rgb(144,238,144); // #90EE90
-                      private static final int WHITE = Color.rgb(245,245,245);
-                      private static final int GREY = Color.rgb(150,150,150);
-                      private static final int YELLOW_FLUO = Color.rgb(255,255,0);      // #FFFF00
-                      private static final int LIGHT_YELLOW = Color.rgb(255,255,153);
-                       private static final int ACTION_RED = Color.rgb(255,120,120);
-                       private static final int INDIVIDUEL_BLUE = Color.rgb(135,206,250);
-                       private static final int TRAVAIL_GREEN = Color.rgb(144,238,144);
-                      private static final Pattern RDV_LINE = Pattern.compile("^\\d{1,2}:\\d{2}\\s+.+$");
-                      private static final Pattern DATE_LINE = Pattern.compile(
-                              "(?i)^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\\s+\\d{1,2}\\s+.+\\s+\\d{4}$"
+                  Locale fr = Locale.FRANCE;
+                  String date = new SimpleDateFormat(
+                      "EEEE d MMMM yyyy", fr
+                  ).format(new Date());
+
+                  String sujet = "SitRepDum — " + date;
+
+                  Intent mail = new Intent(Intent.ACTION_SEND);
+                  mail.setType("text/plain");
+
+                  mail.putExtra(
+                      Intent.EXTRA_EMAIL,
+                      DESTINATAIRES
+                  );
+
+                  mail.putExtra(
+                      Intent.EXTRA_SUBJECT,
+                      sujet
+                  );
+
+                  mail.putExtra(
+                      Intent.EXTRA_TEXT,
+                      texte
+                  );
+
+                  try {
+                      startActivity(
+                          Intent.createChooser(mail, "Envoyer SitRepDum")
+                      );
+                  } catch (Exception e) {
+                      Toast.makeText(
+                          this,
+                          "Aucune application de messagerie disponible.",
+                          Toast.LENGTH_LONG
+                      ).show();
+                  }
+
+                  finish();
+              }
+
+              private String lireSitRep() {
+                  File f = new File(FILE);
+
+                  if (!f.exists()) return null;
+
+                  StringBuilder sb = new StringBuilder();
+
+                  try (BufferedReader br =
+                           new BufferedReader(new FileReader(f))) {
+
+                      String ligne;
+
+                      while ((ligne = br.readLine()) != null) {
+
+                          // Retire uniquement les balises techniques
+                          // utilisées pour les couleurs du widget.
+                          ligne = ligne.replaceFirst(
+                              "^\\s*\\[(ACTION|INDIVIDUEL|TRAVAIL)\\]\\s*",
+                              ""
+                          );
+
+                          sb.append(ligne).append("\n");
+                      }
+
+                      return sb.toString().trim();
+
+                  } catch (Exception e) {
+                      return null;
+                  }
+              }
+          }
+          EOF
+
+          cat > app/src/main/java/fr/olivierdumoulin/sitrepdum/SitRepWidgetProvider.java <<'EOF'
+          package fr.olivierdumoulin.sitrepdum;
+
+          import android.app.PendingIntent;
+          import android.appwidget.AppWidgetManager;
+          import android.appwidget.AppWidgetProvider;
+          import android.content.Context;
+          import android.content.Intent;
+          import android.widget.RemoteViews;
+
+          public class SitRepWidgetProvider extends AppWidgetProvider {
+
+              @Override
+              public void onUpdate(
+                  Context context,
+                  AppWidgetManager manager,
+                  int[] ids
+              ) {
+                  for (int id : ids) {
+
+                      RemoteViews views =
+                          new RemoteViews(
+                              context.getPackageName(),
+                              R.layout.widget_layout
+                          );
+
+                      Intent svc =
+                          new Intent(
+                              context,
+                              SitRepWidgetService.class
+                          );
+
+                      svc.putExtra(
+                          AppWidgetManager.EXTRA_APPWIDGET_ID,
+                          id
                       );
 
-                      Factory(Context c) {
-                          context = c;
-                      }
+                      svc.setData(
+                          android.net.Uri.parse(
+                              svc.toUri(Intent.URI_INTENT_SCHEME)
+                          )
+                      );
 
-                      private void load() {
-                          lines.clear();
-                          File f = new File(FILE);
-                          if (!f.exists()) {
-                              lines.add("widget.txt introuvable");
-                              lines.add(FILE);
-                              return;
-                          }
-                          try (BufferedReader br = new BufferedReader(new FileReader(f))) {
-                              String s;
-                              while ((s = br.readLine()) != null) {
-                                  // On conserve les séparateurs mais on élimine les lignes vides
-                                  // afin de garder le widget très compact.
-                                  if (!s.trim().isEmpty()) lines.add(s);
-                              }
-                          } catch (Exception e) {
-                              lines.add("Erreur lecture widget.txt");
-                              lines.add(e.getClass().getSimpleName());
-                          }
-                      }
+                      views.setRemoteAdapter(
+                          R.id.widget_list,
+                          svc
+                      );
 
-                      @Override public void onCreate() { load(); }
-                      @Override public void onDataSetChanged() { load(); }
-                      @Override public void onDestroy() { lines.clear(); }
-                      @Override public int getCount() { return lines.size(); }
+                      // Clic sur le contenu du SitRep :
+                      // ouvre l'application.
+                      Intent open =
+                          new Intent(context, MainActivity.class);
 
-                      private boolean isSeparator(String s) {
-                          return s.matches("^[─━_\\-]{8,}$");
-                      }
+                      PendingIntent openPi =
+                          PendingIntent.getActivity(
+                              context,
+                              1000 + id,
+                              open,
+                              PendingIntent.FLAG_UPDATE_CURRENT |
+                              PendingIntent.FLAG_IMMUTABLE
+                          );
 
-                      private boolean isDate(String s) {
-                          return DATE_LINE.matcher(s.trim()).matches();
-                      }
+                      views.setPendingIntentTemplate(
+                          R.id.widget_list,
+                          openPi
+                      );
 
-                      private CharSequence bold(String s) {
-                          SpannableString sp = new SpannableString(s);
-                          sp.setSpan(new StyleSpan(Typeface.BOLD), 0, sp.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                          return sp;
-                      }
+                      // Bouton MAIL.
+                      Intent mail =
+                          new Intent(context, MailActivity.class);
 
-                      private CharSequence styledRdv(String s) {
-                          SpannableString sp = new SpannableString(s);
-                          int cut = s.indexOf(' ');
-                          if (cut < 0) cut = s.length();
-                          // Heure : jaune fluo + gras.
-                          sp.setSpan(new ForegroundColorSpan(YELLOW_FLUO), 0, cut, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                          sp.setSpan(new StyleSpan(Typeface.BOLD), 0, cut, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                          // Intitulé du rendez-vous : jaune clair.
-                          if (cut < s.length()) {
-                              sp.setSpan(new ForegroundColorSpan(LIGHT_YELLOW), cut, s.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                          }
-                          return sp;
-                      }
+                      PendingIntent mailPi =
+                          PendingIntent.getActivity(
+                              context,
+                              2000 + id,
+                              mail,
+                              PendingIntent.FLAG_UPDATE_CURRENT |
+                              PendingIntent.FLAG_IMMUTABLE
+                          );
 
+                      views.setOnClickPendingIntent(
+                          R.id.mail_button,
+                          mailPi
+                      );
 
-                      private boolean hasTaskTag(String s) {
-                          String t = s == null ? "" : s.trim();
-                          return t.startsWith("[ACTION]")
-                              || t.startsWith("[INDIVIDUEL]")
-                              || t.startsWith("[TRAVAIL]");
-                      }
+                      manager.updateAppWidget(id, views);
 
-                      private String stripTaskTag(String s) {
-                          return s.replaceFirst("^\\s*\\[(ACTION|INDIVIDUEL|TRAVAIL)\\]\\s*", "");
-                      }
-
-                      private int taskTagColor(String s) {
-                          String t = s == null ? "" : s.trim();
-                          if (t.startsWith("[ACTION]")) return ACTION_RED;
-                          if (t.startsWith("[INDIVIDUEL]")) return INDIVIDUEL_BLUE;
-                          if (t.startsWith("[TRAVAIL]")) return TRAVAIL_GREEN;
-                          return WHITE;
-                      }
-
-                      @Override
-                      public RemoteViews getViewAt(int position) {
-                          if (position < 0 || position >= lines.size()) return null;
-                          String text = lines.get(position);
-                          RemoteViews v = new RemoteViews(context.getPackageName(), R.layout.widget_row);
-
-                          // 1re date : plus grosse, grasse et vert fluo.
-                          if (position == 0) {
-                              v.setTextViewText(R.id.row_text, bold(text));
-                              v.setTextColor(R.id.row_text, FLUO);
-                              v.setTextViewTextSize(R.id.row_text, android.util.TypedValue.COMPLEX_UNIT_SP, 20f);
-                              v.setViewPadding(R.id.row_text, 0, 2, 0, 2);
-                          }
-                          // Dates des zones Aujourd'hui / Demain : vert clair + gras.
-                          else if (isDate(text)) {
-                              v.setTextViewText(R.id.row_text, bold(text));
-                              v.setTextColor(R.id.row_text, LIGHT_GREEN);
-                              v.setTextViewTextSize(R.id.row_text, android.util.TypedValue.COMPLEX_UNIT_SP, 16f);
-                              v.setViewPadding(R.id.row_text, 0, 3, 0, 0);
-                          }
-                          // Tâches : couleur selon tag.
-                          else if (hasTaskTag(text)) {
-                              String shown = stripTaskTag(text);
-                              v.setTextViewText(R.id.row_text, shown);
-                              v.setTextColor(R.id.row_text, taskTagColor(text));
-                              v.setTextViewTextSize(R.id.row_text, android.util.TypedValue.COMPLEX_UNIT_SP, 15f);
-                              v.setViewPadding(R.id.row_text, 0, 0, 0, 0);
-                          }
-                          // Rendez-vous : heure jaune fluo, intitulé jaune clair.
-                          else if (RDV_LINE.matcher(text.trim()).matches()) {
-                              v.setTextViewText(R.id.row_text, styledRdv(text));
-                              v.setTextColor(R.id.row_text, WHITE);
-                              v.setTextViewTextSize(R.id.row_text, android.util.TypedValue.COMPLEX_UNIT_SP, 15f);
-                              v.setViewPadding(R.id.row_text, 0, 0, 0, 0);
-                          }
-                          // Séparateurs : gris et très compacts.
-                          else if (isSeparator(text)) {
-                              v.setTextViewText(R.id.row_text, text);
-                              v.setTextColor(R.id.row_text, GREY);
-                              v.setTextViewTextSize(R.id.row_text, android.util.TypedValue.COMPLEX_UNIT_SP, 11f);
-                              v.setViewPadding(R.id.row_text, 0, 2, 0, 2);
-                          }
-                          // Tout le reste : blanc.
-                          else {
-                              v.setTextViewText(R.id.row_text, text);
-                              v.setTextColor(R.id.row_text, WHITE);
-                              v.setTextViewTextSize(R.id.row_text, android.util.TypedValue.COMPLEX_UNIT_SP, 15f);
-                              v.setViewPadding(R.id.row_text, 0, 0, 0, 0);
-                          }
-
-                          Intent fill = new Intent();
-                          v.setOnClickFillInIntent(R.id.row_text, fill);
-                          return v;
-                      }
-
-                      @Override public RemoteViews getLoadingView() { return null; }
-                      @Override public int getViewTypeCount() { return 1; }
-                      @Override public long getItemId(int position) { return position; }
-                      @Override public boolean hasStableIds() { return true; }
+                      manager.notifyAppWidgetViewDataChanged(
+                          id,
+                          R.id.widget_list
+                      );
                   }
               }
-              EOF
+          }
+          EOF
 
-          - name: Build APK
-            run: gradle :app:assembleDebug --stacktrace
+          cat > app/src/main/java/fr/olivierdumoulin/sitrepdum/SitRepWidgetService.java <<'EOF'
+          package fr.olivierdumoulin.sitrepdum;
 
-          - name: Rename APK V8
-            run: cp app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/SitRepDum-V8-TAGS.apk
+          import android.content.Context;
+          import android.content.Intent;
+          import android.graphics.Color;
+          import android.graphics.Typeface;
+          import android.text.SpannableString;
+          import android.text.Spanned;
+          import android.text.style.StyleSpan;
+          import android.text.style.ForegroundColorSpan;
+          import android.widget.RemoteViews;
+          import android.widget.RemoteViewsService;
 
-          - name: Upload APK V8
-            uses: actions/upload-artifact@v4
-            with:
-              name: SitRepDum-V8-TAGS-apk
-              path: app/build/outputs/apk/debug/SitRepDum-V8-TAGS.apk
+          import java.io.BufferedReader;
+          import java.io.File;
+          import java.io.FileReader;
+          import java.util.ArrayList;
+          import java.util.List;
+          import java.util.regex.Pattern;
+
+          public class SitRepWidgetService extends RemoteViewsService {
+
+              @Override
+              public RemoteViewsFactory onGetViewFactory(Intent intent) {
+                  return new Factory(getApplicationContext());
+              }
+
+              static class Factory implements RemoteViewsFactory {
+
+                  private final Context context;
+                  private final List<String> lines = new ArrayList<>();
+
+                  private static final String FILE =
+                      "/storage/emulated/0/Obsidian/ObsiDum/_INDEX/SitRepDum/widget.txt";
+
+                  private static final int FLUO =
+                      Color.rgb(57,255,20);
+
+                  private static final int LIGHT_GREEN =
+                      Color.rgb(144,238,144);
+
+                  private static final int WHITE =
+                      Color.rgb(245,245,245);
+
+                  private static final int GREY =
+                      Color.rgb(150,150,150);
+
+                  private static final int YELLOW_FLUO =
+                      Color.rgb(255,255,0);
+
+                  private static final int LIGHT_YELLOW =
+                      Color.rgb(255,255,153);
+
+                  private static final int ACTION_RED =
+                      Color.rgb(255,120,120);
+
+                  private static final int INDIVIDUEL_BLUE =
+                      Color.rgb(135,206,250);
+
+                  private static final int TRAVAIL_GREEN =
+                      Color.rgb(144,238,144);
+
+                  private static final Pattern RDV_LINE =
+                      Pattern.compile(
+                          "^\\d{1,2}:\\d{2}\\s+.+$"
+                      );
+
+                  private static final Pattern DATE_LINE =
+                      Pattern.compile(
+                          "(?i)^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\\s+\\d{1,2}\\s+.+\\s+\\d{4}$"
+                      );
+
+                  Factory(Context c) {
+                      context = c;
+                  }
+
+                  private void load() {
+                      lines.clear();
+
+                      File f = new File(FILE);
+
+                      if (!f.exists()) {
+                          lines.add("widget.txt introuvable");
+                          lines.add(FILE);
+                          return;
+                      }
+
+                      try (
+                          BufferedReader br =
+                              new BufferedReader(
+                                  new FileReader(f)
+                              )
+                      ) {
+                          String s;
+
+                          while ((s = br.readLine()) != null) {
+                              if (!s.trim().isEmpty()) {
+                                  lines.add(s);
+                              }
+                          }
+
+                      } catch (Exception e) {
+                          lines.add(
+                              "Erreur lecture widget.txt"
+                          );
+                          lines.add(
+                              e.getClass().getSimpleName()
+                          );
+                      }
+                  }
+
+                  @Override
+                  public void onCreate() {
+                      load();
+                  }
+
+                  @Override
+                  public void onDataSetChanged() {
+                      load();
+                  }
+
+                  @Override
+                  public void onDestroy() {
+                      lines.clear();
+                  }
+
+                  @Override
+                  public int getCount() {
+                      return lines.size();
+                  }
+
+                  private boolean isSeparator(String s) {
+                      return s.matches(
+                          "^[─━_\\-]{8,}$"
+                      );
+                  }
+
+                  private boolean isDate(String s) {
+                      return DATE_LINE
+                          .matcher(s.trim())
+                          .matches();
+                  }
+
+                  private CharSequence bold(String s) {
+                      SpannableString sp =
+                          new SpannableString(s);
+
+                      sp.setSpan(
+                          new StyleSpan(Typeface.BOLD),
+                          0,
+                          sp.length(),
+                          Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                      );
+
+                      return sp;
+                  }
+
+                  private CharSequence styledRdv(String s) {
+
+                      SpannableString sp =
+                          new SpannableString(s);
+
+                      int cut = s.indexOf(' ');
+
+                      if (cut < 0)
+                          cut = s.length();
+
+                      sp.setSpan(
+                          new ForegroundColorSpan(
+                              YELLOW_FLUO
+                          ),
+                          0,
+                          cut,
+                          Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                      );
+
+                      sp.setSpan(
+                          new StyleSpan(Typeface.BOLD),
+                          0,
+                          cut,
+                          Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                      );
+
+                      if (cut < s.length()) {
+
+                          sp.setSpan(
+                              new ForegroundColorSpan(
+                                  LIGHT_YELLOW
+                              ),
+                              cut,
+                              s.length(),
+                              Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                          );
+                      }
+
+                      return sp;
+                  }
+
+                  private boolean hasTaskTag(String s) {
+
+                      String t =
+                          s == null ? "" : s.trim();
+
+                      return
+                          t.startsWith("[ACTION]") ||
+                          t.startsWith("[INDIVIDUEL]") ||
+                          t.startsWith("[TRAVAIL]");
+                  }
+
+                  private String stripTaskTag(String s) {
+
+                      return s.replaceFirst(
+                          "^\\s*\\[(ACTION|INDIVIDUEL|TRAVAIL)\\]\\s*",
+                          ""
+                      );
+                  }
+
+                  private int taskTagColor(String s) {
+
+                      String t =
+                          s == null ? "" : s.trim();
+
+                      if (t.startsWith("[ACTION]"))
+                          return ACTION_RED;
+
+                      if (t.startsWith("[INDIVIDUEL]"))
+                          return INDIVIDUEL_BLUE;
+
+                      if (t.startsWith("[TRAVAIL]"))
+                          return TRAVAIL_GREEN;
+
+                      return WHITE;
+                  }
+
+                  @Override
+                  public RemoteViews getViewAt(
+                      int position
+                  ) {
+
+                      if (
+                          position < 0 ||
+                          position >= lines.size()
+                      )
+                          return null;
+
+                      String text =
+                          lines.get(position);
+
+                      RemoteViews v =
+                          new RemoteViews(
+                              context.getPackageName(),
+                              R.layout.widget_row
+                          );
+
+                      if (position == 0) {
+
+                          v.setTextViewText(
+                              R.id.row_text,
+                              bold(text)
+                          );
+
+                          v.setTextColor(
+                              R.id.row_text,
+                              FLUO
+                          );
+
+                          v.setTextViewTextSize(
+                              R.id.row_text,
+                              android.util.TypedValue.COMPLEX_UNIT_SP,
+                              20f
+                          );
+
+                          v.setViewPadding(
+                              R.id.row_text,
+                              0,2,0,2
+                          );
+
+                      } else if (isDate(text)) {
+
+                          v.setTextViewText(
+                              R.id.row_text,
+                              bold(text)
+                          );
+
+                          v.setTextColor(
+                              R.id.row_text,
+                              LIGHT_GREEN
+                          );
+
+                          v.setTextViewTextSize(
+                              R.id.row_text,
+                              android.util.TypedValue.COMPLEX_UNIT_SP,
+                              16f
+                          );
+
+                          v.setViewPadding(
+                              R.id.row_text,
+                              0,3,0,0
+                          );
+
+                      } else if (hasTaskTag(text)) {
+
+                          String shown =
+                              stripTaskTag(text);
+
+                          v.setTextViewText(
+                              R.id.row_text,
+                              shown
+                          );
+
+                          v.setTextColor(
+                              R.id.row_text,
+                              taskTagColor(text)
+                          );
+
+                          v.setTextViewTextSize(
+                              R.id.row_text,
+                              android.util.TypedValue.COMPLEX_UNIT_SP,
+                              15f
+                          );
+
+                          v.setViewPadding(
+                              R.id.row_text,
+                              0,0,0,0
+                          );
+
+                      } else if (
+                          RDV_LINE
+                              .matcher(text.trim())
+                              .matches()
+                      ) {
+
+                          v.setTextViewText(
+                              R.id.row_text,
+                              styledRdv(text)
+                          );
+
+                          v.setTextColor(
+                              R.id.row_text,
+                              WHITE
+                          );
+
+                          v.setTextViewTextSize(
+                              R.id.row_text,
+                              android.util.TypedValue.COMPLEX_UNIT_SP,
+                              15f
+                          );
+
+                          v.setViewPadding(
+                              R.id.row_text,
+                              0,0,0,0
+                          );
+
+                      } else if (
+                          isSeparator(text)
+                      ) {
+
+                          v.setTextViewText(
+                              R.id.row_text,
+                              text
+                          );
+
+                          v.setTextColor(
+                              R.id.row_text,
+                              GREY
+                          );
+
+                          v.setTextViewTextSize(
+                              R.id.row_text,
+                              android.util.TypedValue.COMPLEX_UNIT_SP,
+                              11f
+                          );
+
+                          v.setViewPadding(
+                              R.id.row_text,
+                              0,2,0,2
+                          );
+
+                      } else {
+
+                          v.setTextViewText(
+                              R.id.row_text,
+                              text
+                          );
+
+                          v.setTextColor(
+                              R.id.row_text,
+                              WHITE
+                          );
+
+                          v.setTextViewTextSize(
+                              R.id.row_text,
+                              android.util.TypedValue.COMPLEX_UNIT_SP,
+                              15f
+                          );
+
+                          v.setViewPadding(
+                              R.id.row_text,
+                              0,0,0,0
+                          );
+                      }
+
+                      Intent fill =
+                          new Intent();
+
+                      v.setOnClickFillInIntent(
+                          R.id.row_text,
+                          fill
+                      );
+
+                      return v;
+                  }
+
+                  @Override
+                  public RemoteViews getLoadingView() {
+                      return null;
+                  }
+
+                  @Override
+                  public int getViewTypeCount() {
+                      return 1;
+                  }
+
+                  @Override
+                  public long getItemId(
+                      int position
+                  ) {
+                      return position;
+                  }
+
+                  @Override
+                  public boolean hasStableIds() {
+                      return true;
+                  }
+              }
+          }
+          EOF
+
+      - name: Build APK
+        run: gradle :app:assembleDebug --stacktrace
+
+      - name: Rename APK V9
+        run: cp app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/SitRepDum-V9-MAIL.apk
+
+      - name: Upload APK V9
+        uses: actions/upload-artifact@v4
+        with:
+          name: SitRepDum-V9-MAIL-apk
+          path: app/build/outputs/apk/debug/SitRepDum-V9-MAIL.apk
